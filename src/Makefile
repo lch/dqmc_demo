@@ -3,7 +3,7 @@
 # then add your suffixes
 .SUFFIXES: .f90 .F90 .o
 
-include ./make.sys
+include ./make.sys.gfortran
 
 default: all
 

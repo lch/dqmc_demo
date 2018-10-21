@@ -1,8 +1,8 @@
 &model_para
-L = 4,
+L = 40,
 beta = 2,
 dtau = 0.05,
-mu =  -1.11856,
+mu =  -0.842229,
 muA = 0,
 muB = 0,
 rhub = 0,

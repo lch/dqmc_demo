@@ -17,12 +17,16 @@ subroutine sthop
   real(dp) :: wc3(nch3)
   integer :: nf, i_1, ist, i1, i2, i3, i4, i5, i6, i7, i8, m, n, i, j, nf_tmp
   complex(dp), external :: zthp
+  ! zthp is a function in thop_mag.f90
 
   ! checkboard breakup for hopping term
+  ! 6->7 and 6->10
   do nf = 1,2
      do i_1 = 1,lq/4
         ist = i_1 + (nf - 1)*lq/4
+        ! ist is a index of the List, which represent the point i_1 in the nf-th family
         i1 = lthf(i_1,nf)
+        ! then get the point's neighborhood through ist and nnlist
         i2 = nnlist(i1,1)
         i3 = nnlist(i1,5)
         i4 = nnlist(i1,2)
@@ -34,6 +38,7 @@ subroutine sthop
         hlp2 = dcmplx(0.d0,0.d0)
         
         n = i1
+        ! calculate the hopping probability
         zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
         zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
         zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
@@ -105,6 +110,7 @@ subroutine sthop
   enddo
 
   !For 3rd_nearest hopping family
+  ! 6->8 and 6->14
   do nf = 1,8
      do i_1 = 1,lq/16
         ist = i_1 + (nf - 1)*lq/16
@@ -165,6 +171,7 @@ subroutine sthop
 
 
   !For the next_nearest hopping family
+  ! even family 6, odd family 11
   do nf = 1, 4
      do i_1 = 1, lq/4
         nf_tmp = (nf-1)/2 + 1
@@ -502,8 +509,8 @@ subroutine sthop
 
 #else
   ! local
-  integer :: i_1, ist, i1, i2, i3, i4, i5, i6, i7, i8, n, i, j, m, nf
-  complex(dp) :: zx, zy, zz, zzm, zx3, zy3, z0, z1
+  integer :: i_1, ist, i1, i2, i3, i4, i5, i6, i7, i8, n, i, j, m, nf    ,i9,i10,i11
+  complex(dp) :: zx, zy, zz, zzm, zx3, zy3, z0, z1,         zx2y2, zx2y_2,zx3y3,zx3y_3
   complex(dp), dimension(:,:), allocatable :: hvec, hmat
   real(dp), dimension(:), allocatable :: heig
   real(dp) :: en_free
@@ -525,13 +532,27 @@ subroutine sthop
             i6 = nnlist(i2,1)
             i7 = nnlist(i3,5)
             i8 = nnlist(i4,2)
+
+            ! Fermi Surface Drawing - Mod Start
+            i9 = nnlist(i5,8)
+            i10 = nnlist(i9,8)
+            i11 = nnlist(i7,5)
+            ! Fermi Surface Drawing - Mod End
             
             zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
             zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
             zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
             zzm = -dcmplx(rt2,0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
-            zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
-            zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+            ! zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
+            ! zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+
+            ! Fermi Surface Drawing -  Mod Start 
+            zx2y2 = -dcmplx(rt3,0.d0)* zthp(n, 2, 2, xmag, flux_x, flux_y)
+            zx2y_2 = -dcmplx(rt3,0.d0)* zthp(n, 2, -2, xmag, flux_x, flux_y)
+            zx3y3 = -dcmplx(rt4,0.d0)* zthp(n, 3, 3, xmag, flux_x, flux_y)
+            zx3y_3 = -dcmplx(rt4,0.d0)* zthp(n, 3, -3, xmag, flux_x, flux_y)
+            ! Fermi Surface Drawing - Mod End
+
             hmat(i1,i2) = hmat(i1,i2) +        zx
             hmat(i2,i1) = hmat(i2,i1) + dconjg(zx)
             hmat(i1,i3) = hmat(i1,i3) +        zz
@@ -540,16 +561,28 @@ subroutine sthop
             hmat(i4,i1) = hmat(i4,i1) + dconjg(zy)
             hmat(i1,i5) = hmat(i1,i5) +        zzm
             hmat(i5,i1) = hmat(i5,i1) + dconjg(zzm)
-            hmat(i1,i6) = hmat(i1,i6) +        zx3
-            hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
-            hmat(i1,i8) = hmat(i1,i8) +        zy3
-            hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+            ! hmat(i1,i6) = hmat(i1,i6) +        zx3
+            ! hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
+            ! hmat(i1,i8) = hmat(i1,i8) +        zy3
+            ! hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+
+            ! Fermi Surface Drawing - Mod Start 
+            hmat(i1,i9) = hmat(i1,i9) +         zx2y2
+            hmat(i9,i1) = hmat(i9,i1) + dconjg(zx2y2)
+            hmat(i1,i7) = hmat(i1,i7) +         zx2y_2
+            hmat(i7,i1) = hmat(i7,i1) + dconjg(zx2y_2)
+            hmat(i1,i10) = hmat(i1,i10) +       zx3y3
+            hmat(i10,i1) = hmat(i10,i1) + dconjg(zx3y3)
+            hmat(i1,i11) = hmat(i1,i11) +       zx3y_3
+            hmat(i11,i1) = hmat(i11,i1) + dconjg(zx3y_3)
+            ! Fermi Surface Drawing - Mod End 
+            
             hopping_tmp(1,n)=zx      
             hopping_tmp(2,n)=zy
             hopping_tmp(3,n)=zz
             hopping_tmp(4,n)=zzm
-            hopping_tmp(5,n)=zx3
-            hopping_tmp(6,n)=zy3
+            ! hopping_tmp(5,n)=zx3
+            ! hopping_tmp(6,n)=zy3
 
       end do
   ELSE
@@ -573,6 +606,14 @@ subroutine sthop
   end do
 
   call s_eig_he(ndim,ndim,hmat,heig,hvec)
+  print *, " ---> Here"
+  OPEN(unit=999,file='eigen_val.txt',status='replace')
+  do i = 1,ndim
+    WRITE(999,*) heig(i)
+  enddo
+  CLOSE(999)
+  CALL exit(0)
+
   do i = 1,ndim
      do j = 1,ndim
         z0 = dcmplx(0.d0,0.d0)
@@ -627,13 +668,19 @@ subroutine sthop
          i6 = nnlist(i2,1)
          i7 = nnlist(i3,5)
          i8 = nnlist(i4,2)
+
+         ! Fermi Surface Drawing - Mod Start
+         i9 = nnlist(i5,8)
+         i10 = nnlist(i9,8)
+         i11 = nnlist(i7,5)
+         ! Fermi Surface Drawing - Mod End
          
          zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
          zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
          zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
          zzm = -dcmplx(rt2,0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
-         zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
-         zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+        !  zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
+        !  zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
          hmat(i1,i2) = hmat(i1,i2) +        zx
          hmat(i2,i1) = hmat(i2,i1) + dconjg(zx)
          hmat(i1,i3) = hmat(i1,i3) +        zz
@@ -642,16 +689,28 @@ subroutine sthop
          hmat(i4,i1) = hmat(i4,i1) + dconjg(zy)
          hmat(i1,i5) = hmat(i1,i5) +        zzm
          hmat(i5,i1) = hmat(i5,i1) + dconjg(zzm)
-         hmat(i1,i6) = hmat(i1,i6) +        zx3
-         hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
-         hmat(i1,i8) = hmat(i1,i8) +        zy3
-         hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+        !  hmat(i1,i6) = hmat(i1,i6) +        zx3
+        !  hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
+        !  hmat(i1,i8) = hmat(i1,i8) +        zy3
+        !  hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+
+         ! Fermi Surface Drawing - Mod Start 
+         hmat(i1,i9) = hmat(i1,i9) +         zx2y2
+         hmat(i9,i1) = hmat(i9,i1) + dconjg(zx2y2)
+         hmat(i1,i7) = hmat(i1,i7) +         zx2y_2
+         hmat(i7,i1) = hmat(i7,i1) + dconjg(zx2y_2)
+         hmat(i1,i10) = hmat(i1,i10) +       zx3y3
+         hmat(i10,i1) = hmat(i10,i1) + dconjg(zx3y3)
+         hmat(i1,i11) = hmat(i1,i11) +       zx3y_3
+         hmat(i11,i1) = hmat(i11,i1) + dconjg(zx3y_3)
+         ! Fermi Surface Drawing - Mod End 
+
          hopping_tmp_dn(1,n)=zx      
          hopping_tmp_dn(2,n)=zy
          hopping_tmp_dn(3,n)=zz
          hopping_tmp_dn(4,n)=zzm
-         hopping_tmp_dn(5,n)=zx3 
-         hopping_tmp_dn(6,n)=zy3
+        !  hopping_tmp_dn(5,n)=zx3 
+        !  hopping_tmp_dn(6,n)=zy3
 
       end do
   ELSE
@@ -675,6 +734,14 @@ subroutine sthop
   end do
 
   call s_eig_he(ndim,ndim,hmat,heig,hvec)
+print *, " ---> Here"
+  OPEN(unit=999,file='eigen_val_1.txt',status='replace')
+  do i = 1,ndim
+    WRITE(999,*) heig(i)
+  enddo
+  CLOSE(999)
+  CALL exit(0)
+
   do i = 1,ndim
      do j = 1,ndim
         z0 = dcmplx(0.d0,0.d0)

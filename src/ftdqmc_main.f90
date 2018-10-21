@@ -63,7 +63,9 @@ program ftdqmc_main
   ! prepare for the DQMC
   call salph
   call inconfc
+  print *, 'Here!'
   call sthop
+  print *, 'Done!'
   call set_hopx
   
 

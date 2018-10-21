@@ -74,6 +74,7 @@ subroutine ftdqmc_initial_print
   write(fout,'(a,f6.2)')    ' t      = ', rt
   write(fout,'(a,f6.2)')    ' t_2    = ', rt2
   write(fout,'(a,f6.2)')    ' t_3    = ', rt3
+  WRITE(fout,'(a,f6.2)')    ' t_4    = ',rt4
   write(fout,'(a,f6.2)')    ' U      = ', rhub
   write(fout,'(a,f6.2)')    ' js     = ', js
   write(fout,'(a,f6.2)')    ' rj     = ', rj
