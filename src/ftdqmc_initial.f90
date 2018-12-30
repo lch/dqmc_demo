@@ -71,9 +71,14 @@ subroutine ftdqmc_initial_print
   write(fout,'(a)')'  Input parameters for human reading form  '
   write(fout,'(a)')' ----------------------------------------- '
   write(fout,*)
-  write(fout,'(a,f6.2)')    ' t      = ', rt
-  write(fout,'(a,f6.2)')    ' t_2    = ', rt2
-  write(fout,'(a,f6.2)')    ' t_3    = ', rt3
+!   write(fout,'(a,f6.2)')    ' t      = ', rt
+!   write(fout,'(a,f6.2)')    ' t_2    = ', rt2
+!   write(fout,'(a,f6.2)')    ' t_3    = ', rt3
+  write(fout,'(a,f6.2)')    ' t      = ', rt_list(1)
+  write(fout,'(a,f6.2)')    ' t_2    = ', rt_list(2)
+  write(fout,'(a,f6.2)')    ' t_3    = ', rt_list(3)
+  write(fout,'(a,f6.2)')    ' t_5    = ', rt_list(5)
+  write(fout,'(a,f6.2)')    ' t_9    = ', rt_list(9)
   write(fout,'(a,f6.2)')    ' U      = ', rhub
   write(fout,'(a,f6.2)')    ' js     = ', js
   write(fout,'(a,f6.2)')    ' rj     = ', rj
