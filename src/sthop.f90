@@ -4,6 +4,7 @@ subroutine sthop
   implicit none
   
   ! local
+! Checkerboard  Decomposition Start 
 #ifdef BREAKUP_T
   integer, parameter :: nch = 4
   integer, parameter :: nch2 = 2
@@ -12,6 +13,7 @@ subroutine sthop
   complex(dp) :: hlp2(nch,nch), hlp1(nch,nch)
   complex(dp) :: hlpc2(nch2,nch2), hlpc1(nch2,nch2)
   complex(dp) :: hlpd3(nch3,nch3), hlpd1(nch3,nch3)
+  complex(dp) :: hlpd9(nch3,nch3)
   real(dp) :: wc(nch)
   real(dp) :: wc2(nch2)
   real(dp) :: wc3(nch3)
@@ -34,8 +36,8 @@ subroutine sthop
         hlp2 = dcmplx(0.d0,0.d0)
         
         n = i1
-        zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
-        zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+        zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+        zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
         zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
         hlp2(1,2) =        zx
         hlp2(2,1) = dconjg(zx)
@@ -47,7 +49,7 @@ subroutine sthop
         !hopping_tmp(2,ist)=zy
 
         n = i2
-        zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+        zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
         zz = -dcmplx(rt2,0.d0)* zthp(n,-1,1,xmag,flux_x,flux_y)
         hlp2(2,3) =        zy
         hlp2(3,2) = dconjg(zy)
@@ -57,7 +59,7 @@ subroutine sthop
 
 
         n = i4
-        zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+        zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
         hlp2(4,3) =        zx
         hlp2(3,4) = dconjg(zx)
         !hopping_tmp(4,ist)=zx
@@ -137,7 +139,7 @@ subroutine sthop
         hlpd3(4,3) =        zx
         hlpd3(3,4) = dconjg(zx)
 
-        do i = 1, nch3
+        do i = 1, nch3 ! nch3 = 4
             hlpd3(i,i) = hlpd3(i,i) - dcmplx(mu/6.d0,0.d0) ! 1/6 because every site count 6 times
             if(mod(i,2).eq.1) then
                 hlpd3(i,i) = hlpd3(i,i) - dcmplx(muA/6.d0,0.d0)
@@ -235,8 +237,8 @@ subroutine sthop
 
   !calculate hopping_tmp for spin up
   do n = 1,lq                                                
-     zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
-     zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+     zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+     zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
      zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
      zzm = -dcmplx(rt2,0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
      zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
@@ -249,6 +251,7 @@ subroutine sthop
      hopping_tmp(6,n)=zy3
   end do                 
 
+! Spin down Start
 #ifdef SPINDOWN
   do nf = 1,2
      do i_1 = 1,lq/4
@@ -265,8 +268,8 @@ subroutine sthop
         hlp2 = dcmplx(0.d0,0.d0)
         
         n = i1
-        zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
-        zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+        zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+        zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
         zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
         hlp2(1,2) =        zx
         hlp2(2,1) = dconjg(zx)
@@ -278,7 +281,7 @@ subroutine sthop
         !hopping_tmp_dn(2,ist)=zy
 
         n = i2
-        zy = -dcmplx(rt,0.d0)*zthp(n,0,1,xmag,flux_x,flux_y)
+        zy = -dcmplx(rt_list(1),0.d0)*zthp(n,0,1,xmag,flux_x,flux_y)
         zz = -dcmplx(rt2,0.d0)* zthp(n,-1,1,xmag,flux_x,flux_y)
         hlp2(2,3) =        zy
         hlp2(3,2) = dconjg(zy)
@@ -288,7 +291,7 @@ subroutine sthop
 
 
         n = i4
-        zx = -dcmplx(rt,0.d0)*zthp(n,1,0,xmag,flux_x,flux_y)
+        zx = -dcmplx(rt_list(1),0.d0)*zthp(n,1,0,xmag,flux_x,flux_y)
         hlp2(4,3) =        zx
         hlp2(3,4) = dconjg(zx)
         !hopping_tmp_dn(4,ist)=zx
@@ -484,8 +487,8 @@ subroutine sthop
 
   !calculate hopping_tmp for spin down
   do n = 1,lq                                                
-     zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
-     zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+     zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+     zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
      zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
      zzm = -dcmplx(rt2,0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
      zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
@@ -497,13 +500,16 @@ subroutine sthop
      hopping_tmp_dn(5,n)=zx3
      hopping_tmp_dn(6,n)=zy3
   end do
+! Spin down End
+#endif 
 
-#endif
-
+! Checkerboard Else
 #else
   ! local
   integer :: i_1, ist, i1, i2, i3, i4, i5, i6, i7, i8, n, i, j, m, nf
   complex(dp) :: zx, zy, zz, zzm, zx3, zy3, z0, z1
+  integer :: i9, i10, i11
+  complex(dp) :: z_x2_y2, z_x2_y_2, z_x3_y3, z_x3_y_3
   complex(dp), dimension(:,:), allocatable :: hvec, hmat
   real(dp), dimension(:), allocatable :: heig
   real(dp) :: en_free
@@ -525,13 +531,21 @@ subroutine sthop
             i6 = nnlist(i2,1)
             i7 = nnlist(i3,5)
             i8 = nnlist(i4,2)
+            i9 = nnlist(i5,8)
+            i10 = nnlist(i7,5)
+            i11 = nnlist(i9,8)
             
-            zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
-            zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
-            zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
-            zzm = -dcmplx(rt2,0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
-            zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
-            zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+            zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+            zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+            zz = -dcmplx(rt_list(2),0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
+            zzm = -dcmplx(rt_list(2),0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
+            !zx3 = -dcmplx(rt_list(3),0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
+            !zy3 = -dcmplx(rt_list(3),0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+            z_x2_y2 = -dcmplx(rt_list(5),0.d0) * zthp(n,2,2,xmag,flux_x,flux_y)
+            z_x2_y_2 = -dcmplx(rt_list(5),0.d0) * zthp(n,2,-2,xmag,flux_x,flux_y)
+            z_x3_y3 = -dcmplx(rt_list(9),0.d0) * zthp(n,3,3,xmag,flux_x,flux_y)
+            z_x3_y_3 = -dcmplx(rt_list(9),0.d0) * zthp(n,3,-3,xmag,flux_x,flux_y)
+
             hmat(i1,i2) = hmat(i1,i2) +        zx
             hmat(i2,i1) = hmat(i2,i1) + dconjg(zx)
             hmat(i1,i3) = hmat(i1,i3) +        zz
@@ -540,10 +554,18 @@ subroutine sthop
             hmat(i4,i1) = hmat(i4,i1) + dconjg(zy)
             hmat(i1,i5) = hmat(i1,i5) +        zzm
             hmat(i5,i1) = hmat(i5,i1) + dconjg(zzm)
-            hmat(i1,i6) = hmat(i1,i6) +        zx3
-            hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
-            hmat(i1,i8) = hmat(i1,i8) +        zy3
-            hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+            !hmat(i1,i6) = hmat(i1,i6) +        zx3
+            !hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
+            !hmat(i1,i8) = hmat(i1,i8) +        zy3
+            !hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+            hmat(i1,i7) = hmat(i1,i7) +        z_x2_y2
+            hmat(i7,i1) = hmat(i7,i1) + dconjg(z_x2_y2)
+            hmat(i1,i9) = hmat(i1,i9) +        z_x2_y_2
+            hmat(i9,i1) = hmat(i9,i1) + dconjg(z_x2_y_2)
+            hmat(i1,i10) = hmat(i1,i10) +        z_x3_y3
+            hmat(i10,i1) = hmat(i10,i1) + dconjg(z_x3_y3)
+            hmat(i1,i11) = hmat(i1,i11) + z_x3_y_3
+            hmat(i11,i1) = hmat(i11,i1) + dconjg(z_x3_y_3)
             hopping_tmp(1,n)=zx      
             hopping_tmp(2,n)=zy
             hopping_tmp(3,n)=zz
@@ -553,7 +575,7 @@ subroutine sthop
 
       end do
   ELSE
-      hmat(1,1) = dcmplx(-4.d0*rt, 0.d0 )
+      hmat(1,1) = dcmplx(-4.d0*rt_list(1), 0.d0 )
   END IF
 #ifdef TEST
   write(fout,*)
@@ -613,7 +635,7 @@ subroutine sthop
   end if
 
 
-
+! Spin down Start
 #ifdef SPINDOWN
   hmat(:,:) = dcmplx(0.d0,0.d0)
   IF( l .gt. 1 ) THEN
@@ -627,13 +649,18 @@ subroutine sthop
          i6 = nnlist(i2,1)
          i7 = nnlist(i3,5)
          i8 = nnlist(i4,2)
+         i9 = nnlist(i5,8)
+         i10 = nnlist(i7,5)
+         i11 = nnlist(i9,8)
          
-         zx = -dcmplx(rt,0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
-         zy = -dcmplx(rt,0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
-         zz = -dcmplx(rt2,0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
-         zzm = -dcmplx(rt2,0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
-         zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
-         zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+         zx = -dcmplx(rt_list(1),0.d0)* zthp(n,1,0,xmag,flux_x,flux_y)
+         zy = -dcmplx(rt_list(1),0.d0)* zthp(n,0,1,xmag,flux_x,flux_y)
+         zz = -dcmplx(rt_list(2),0.d0)* zthp(n,1,1,xmag,flux_x,flux_y)
+         zzm = -dcmplx(rt_list(2),0.d0)* zthp(n,1,-1,xmag,flux_x,flux_y)
+         !zx3 = -dcmplx(rt3,0.d0)* zthp(n,2,0,xmag,flux_x,flux_y)
+         !zy3 = -dcmplx(rt3,0.d0)* zthp(n,0,2,xmag,flux_x,flux_y)
+         z_x2_y2 = -dcmplx(rt_list(5),0.d0) * zthp(n,2,2,xmag,flux_x,flux_y)
+         z_x3_y3 = -dcmplx(rt_list(9),0.d0) * zthp(n,3,3,xmag,flux_x,flux_y)
          hmat(i1,i2) = hmat(i1,i2) +        zx
          hmat(i2,i1) = hmat(i2,i1) + dconjg(zx)
          hmat(i1,i3) = hmat(i1,i3) +        zz
@@ -642,20 +669,28 @@ subroutine sthop
          hmat(i4,i1) = hmat(i4,i1) + dconjg(zy)
          hmat(i1,i5) = hmat(i1,i5) +        zzm
          hmat(i5,i1) = hmat(i5,i1) + dconjg(zzm)
-         hmat(i1,i6) = hmat(i1,i6) +        zx3
-         hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
-         hmat(i1,i8) = hmat(i1,i8) +        zy3
-         hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+        ! hmat(i1,i6) = hmat(i1,i6) +        zx3
+        ! hmat(i6,i1) = hmat(i6,i1) + dconjg(zx3)
+        ! hmat(i1,i8) = hmat(i1,i8) +        zy3
+        ! hmat(i8,i1) = hmat(i8,i1) + dconjg(zy3)
+         hmat(i1,i7) = hmat(i1,i7) +        z_x2_y2
+         hmat(i7,i1) = hmat(i7,i1) + dconjg(z_x2_y2)
+         hmat(i1,i9) = hmat(i1,i9) +        z_x2_y_2
+         hmat(i9,i1) = hmat(i9,i1) + dconjg(z_x2_y_2)
+         hmat(i1,i10) = hmat(i1,i10) +        z_x3_y3
+         hmat(i10,i1) = hmat(i10,i1) + dconjg(z_x3_y3)
+         hmat(i1,i11) = hmat(i1,i11) + z_x3_y_3
+         hmat(i11,i1) = hmat(i11,i1) + dconjg(z_x3_y_3)
          hopping_tmp_dn(1,n)=zx      
          hopping_tmp_dn(2,n)=zy
          hopping_tmp_dn(3,n)=zz
          hopping_tmp_dn(4,n)=zzm
-         hopping_tmp_dn(5,n)=zx3 
-         hopping_tmp_dn(6,n)=zy3
+         !hopping_tmp_dn(5,n)=zx3 
+         !hopping_tmp_dn(6,n)=zy3
 
       end do
   ELSE
-      hmat(1,1) = dcmplx(-4.d0*rt, 0.d0 )
+      hmat(1,1) = dcmplx(-4.d0*rt_list(1), 0.d0 )
   END IF
 #ifdef TEST
   write(fout,*)
@@ -713,11 +748,13 @@ subroutine sthop
       write(fout,*)
       write(fout,'(a,e16.8)') ' half-filling en_free = ', 2.d0*en_free   ! 2 spin flavor
   end if
+! Spin down end
 #endif
 
   deallocate( heig )
   deallocate( hvec )
 
+! Checkerboard Decomposition End
 #endif
 
 end subroutine sthop
@@ -728,8 +765,8 @@ subroutine set_hopx
   integer :: i, imx
   complex(dp), external :: zthp
   do i = 1, lq
-      hop_plusx(i)  = dcmplx(rt,0.d0)*zthp(i,1,0,xmag,flux_x,flux_y)
+      hop_plusx(i)  = dcmplx(rt_list(1),0.d0)*zthp(i,1,0,xmag,flux_x,flux_y)
       imx = nnlist(i,3)
-      hop_minusx(i) = dconjg( dcmplx(rt,0.d0)*zthp(imx,1,0,xmag,flux_x,flux_y) )
+      hop_minusx(i) = dconjg( dcmplx(rt_list(1),0.d0)*zthp(imx,1,0,xmag,flux_x,flux_y) )
   end do
 end subroutine set_hopx

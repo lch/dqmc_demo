@@ -22,10 +22,12 @@ module blockc
   integer, allocatable, dimension(:,:), save :: invlist
   integer, allocatable, dimension(:,:), save :: nnlist
   integer, allocatable, dimension(:,:), save :: list_plaq
-  integer, allocatable, dimension(:,:), save :: ltpf
+  integer, allocatable, dimension(:,:), save :: ltpf  ! unknown purpose
   integer, allocatable, dimension(:,:), save :: lthf
   integer, allocatable, dimension(:,:), save :: lthf2 ! next nearest
   integer, allocatable, dimension(:,:), save :: lthf3 ! 3rd nearest
+  integer, allocatable, dimension(:,:), save :: lthf5 ! i+2, i+2
+  integer, allocatable, dimension(:,:), save :: lthf9 ! i+3, i+3
 
   integer, allocatable, dimension(:), save :: orblist
 
@@ -42,6 +44,8 @@ module blockc
   real(dp), parameter :: rt = 1.d0
   real(dp), parameter :: rt2 = -0.32d0
   real(dp), parameter :: rt3 = 0.128d0
+  integer, parameter :: rt_number = 12 ! We need to calculate more nearest.
+  real(dp), allocatable, dimension(:) :: rt_list
   real(dp), save :: beta
   real(dp), save :: mu
   real(dp), save :: muA ! chemical potentail for A sublattice
@@ -323,9 +327,27 @@ module blockc
     allocate( nnlist(lq, 0:8) )
     allocate( list_plaq(lq, 1:5) )
     allocate( ltpf(max(lq/2,1), 4) )
-    allocate( lthf(max(lq/4,1), 2) )
-    allocate( lthf2(max(lq/4,1), 2) )
-    allocate( lthf3(max(lq/16,1), 8) )
+    !allocate( lthf(max(lq/4,1), 2) )
+    !allocate( lthf2(max(lq/4,1), 2) )
+    !allocate( lthf3(max(lq/16,1), 8) )
+
+    allocate( lthf( max(lq/checker_board_unit_size(1),1), family_number(1) ) )
+    allocate( lthf2( max(lq/checker_board_unit_size(1),1), family_number(1) ) )
+    allocate( lthf3( max(lq/checker_board_unit_size(2),1), family_number(2) ) )
+
+    allocate( lthf5( max(lq/checker_board_unit_size(2),1), family_number(2) ) )
+    allocate( lthf9( max(lq/checker_board_unit_size(3),1), family_number(3) ) )
+
+    allocate( rt_list(rt_number) )
+    ! real(dp), parameter :: rt = 1.d0
+    ! real(dp), parameter :: rt2 = -0.32d0
+    ! real(dp), parameter :: rt3 = 0.128d0
+    ! Model Parameter
+    rt_list(1) = 1.d0
+    rt_list(2) = 0.332d0 !0.331672
+    rt_list(3) = 0.128d0
+    rt_list(5) = 0.148d0 !0.148328
+    rt_list(9) = 0.08d0  !0.08
 
     allocate( orblist(ndim) )
 
@@ -431,5 +453,19 @@ module blockc
     if(allocated(wrap_step) ) deallocate( wrap_step )
     deallocate( iwrap_nt )
   end subroutine deallocate_tables
+
+  function family_number(neighbor_delta)
+    integer :: family_number
+    integer :: neighbor_delta
+    family_number = 2 * neighbor_delta**2
+    return
+  end function
+
+    function checker_board_unit_size(neighbor_delta)
+        integer :: checker_board_unit_size
+        integer :: neighbor_delta
+        checker_board_unit_size = (neighbor_delta * 2)**2
+        return
+    endfunction
 
 end module blockc
