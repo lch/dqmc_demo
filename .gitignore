@@ -7,4 +7,5 @@
 *.sys
 confout
 ftdqmc
-
+.gitignore
+.DS_Store
