@@ -344,10 +344,10 @@ module blockc
     ! real(dp), parameter :: rt3 = 0.128d0
     ! Model Parameter
     rt_list(1) = 1.d0
-    rt_list(2) = 0.332d0 !0.331672
+    rt_list(2) = -0.332d0 !0.331672
     rt_list(3) = 0.128d0
-    rt_list(5) = 0.148d0 !0.148328
-    rt_list(9) = 0.08d0  !0.08
+    rt_list(5) = -0.148d0 !0.148328
+    rt_list(9) = -0.08d0  !0.08
 
     allocate( orblist(ndim) )
 
